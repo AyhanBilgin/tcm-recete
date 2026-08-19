@@ -6,241 +6,388 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>TCM Akupunktur Reçete Bankası</title>
+    <title>TCM Akupunktur Reçete & Uzman Bankası</title>
 
-    <meta property="og:title" content="TCM Akupunktur Reçete Bankası" />
+    <meta property="og:title" content="TCM Akupunktur Reçete & Uzman Bankası" />
     <meta
       property="og:description"
-      content="Ortak Klinik Endikasyon ve Sendrom Reçeteleri Veritabanı"
+      content="Ortak Klinik Endikasyon, Sendrom Reçeteleri ve Uzman Rehberi Veritabanı"
     />
-    <meta
-      property="og:image"
-      content="https://cdn-icons-png.flaticon.com/512/463/463870.png"
-    />
+
+    <!-- PWA Manifest ve Mobil Uyumluluk -->
+<link rel="manifest" href="/manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TCM Reçete">
+<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/808/808581.png">
+
+    <!-- Yin-Yang İkonu -->
+    <meta property="og:image" content="https://cdn-icons-png.flaticon.com/512/808/808581.png" />
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/808/808581.png" />
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/808/808581.png" />
+    
     <meta property="og:type" content="website" />
 
     <meta name="theme-color" content="#2b7a78" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="TCM Reçete" />
 
-    <link
-      rel="apple-touch-icon"
-      href="https://cdn-icons-png.flaticon.com/512/463/463870.png"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      href="https://cdn-icons-png.flaticon.com/512/463/463870.png"
-    />
-
     <!-- Firebase Kütüphaneleri -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-     :root {
-  --bg-color: #f4f7f6;
-  --card-bg: #ffffff;
-  --primary-color: #2b7a78;
-  --accent-color: #3aafa9;
-  --text-color: #17252a;
-  --border-radius: 12px;
-}
+      :root {
+        --bg-color: #f4f7f6;
+        --card-bg: #ffffff;
+        --primary-color: #2b7a78;
+        --accent-color: #3aafa9;
+        --text-color: #17252a;
+        --border-radius: 12px;
+      }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  /* Akupunktur görseli ve karartma katmanı */
-  background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.8)), 
-              url('https://miro.medium.com/v2/resize:fill:1200:632/g:fp:0.43:0.4/1*K0w1Lz77mFTaPz2gJmjeBQ.jpeg') no-repeat center center fixed;
-  background-size: cover;
-  color: var(--text-color);
-  margin: 0;
-  padding: 20px;
-  padding-bottom: 90px;
-  display: block; /* Düzeni dikey olarak sıraya sokar */
-}
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.8)), 
+                    url('https://miro.medium.com/v2/resize:fill:1200:632/g:fp:0.43:0.4/1*K0w1Lz77mFTaPz2gJmjeBQ.jpeg') no-repeat center center fixed;
+        background-size: cover;
+        color: var(--text-color);
+        margin: 0;
+        padding: 20px;
+        padding-bottom: 90px;
+        display: block;
+      }
 
-/* En Üstteki Başlık Alanı */
-header { 
-  text-align: center; 
-  margin-bottom: 25px; 
-  position: relative; 
-}
+      /* Header */
+      header { 
+        text-align: center; 
+        margin-bottom: 15px; 
+        position: relative; 
+      }
 
-header h1 { 
-  font-size: 2rem; 
-  margin: 5px 0; 
-  color: #ffffff; /* Koyu arka planda net okunması için beyaz yapıldı */
-  cursor: pointer; 
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-}
+      header h1 { 
+        font-size: 2rem; 
+        margin: 5px 0; 
+        color: #ffffff; 
+        cursor: pointer; 
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+      }
 
-header p { 
-  margin: 0; 
-  font-size: 1rem; 
-  color: #e2e8f0; 
-}
+      header p { 
+        margin: 0; 
+        font-size: 1rem; 
+        color: #e2e8f0; 
+      }
 
-/* Arama Çubuğu ve Buton Alanı */
-.controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  margin: 0 auto 30px auto;
-  max-width: 700px;
-  flex-wrap: wrap;
-}
+      /* Tab Navigasyonu */
+      .tab-navigation {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
 
-input[type="text"], input[type="date"], input[type="number"], select {
-  padding: 12px 16px;
-  flex: 1;
-  min-width: 220px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  outline: none;
-  font-size: 0.95rem;
-  box-sizing: border-box;
-  background: white;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
+      .tab-btn {
+        padding: 10px 20px;
+        font-size: 1rem;
+        font-weight: bold;
+        border: none;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+        cursor: pointer;
+        backdrop-filter: blur(5px);
+        transition: all 0.3s ease;
+      }
 
-.btn-add {
-  padding: 12px 24px;
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  font-weight: bold;
-  cursor: pointer;
-  white-space: nowrap;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
+      .tab-btn.active {
+        background: var(--accent-color);
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      }
 
-.btn-add:hover {
-  background-color: var(--accent-color);
-}
+      /* Arama ve Buton */
+      .controls {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        margin: 0 auto 30px auto;
+        max-width: 700px;
+        flex-wrap: wrap;
+      }
 
-/* Reçetelerin Sıralandığı Izgara */
-.recipe-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
+      input[type="text"], input[type="date"], input[type="number"], input[type="tel"], select {
+        padding: 12px 16px;
+        flex: 1;
+        min-width: 220px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        outline: none;
+        font-size: 0.95rem;
+        box-sizing: border-box;
+        background: white;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      }
 
-.card {
-  background: var(--card-bg);
-  border-radius: var(--border-radius);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-  padding: 18px;
-  border-top: 5px solid var(--accent-color);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
+      .btn-add {
+        padding: 12px 24px;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: bold;
+        cursor: pointer;
+        white-space: nowrap;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      }
 
-.card-header-info {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.82rem;
-  color: #555;
-  margin-bottom: 8px;
-  border-bottom: 1px dashed #eee;
-  padding-bottom: 6px;
-  font-weight: 500;
-  flex-wrap: wrap;
-  gap: 4px;
-}
+      .btn-add:hover {
+        background-color: var(--accent-color);
+      }
 
-.card h3 { margin: 6px 0 10px 0; color: var(--primary-color); font-size: 1.15rem; }
-.tag { display: inline-block; background: #e0f2f1; color: #004d40; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; }
-.detail-item { margin: 5px 0; font-size: 0.88rem; line-height: 1.4; color: #333; }
+      /* Reçete Grid */
+      .recipe-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+        align-items: start;
+      }
 
-.seans-box {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 10px;
-  margin-top: 10px;
-  font-size: 0.85rem;
-}
+      /* DOKTOR TEK LİSTE DÜZENİ */
+      .doctor-single-container {
+        max-width: 700px;
+        margin: 0 auto;
+      }
 
-.seans-item {
-  border-bottom: 1px solid #edf2f7;
-  padding: 4px 0;
-}
-.seans-item:last-child { border-bottom: none; }
+      .doctor-list-pane {
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        padding: 16px;
+      }
 
-.card-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 15px;
-  padding-top: 10px;
-  border-top: 1px solid #eee;
-}
+      .doctor-list-item {
+        padding: 14px 18px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        transition: all 0.2s ease;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
 
-.btn-edit, .btn-delete {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  cursor: pointer;
-  font-weight: bold;
-}
+      .doctor-list-item:hover {
+        background: #e0f2f1;
+        border-color: var(--accent-color);
+        transform: translateY(-2px);
+      }
 
-.btn-edit { background: #e2f0d9; color: #385723; }
-.btn-delete { background: #fce4d6; color: #c65911; }
+      .doc-item-name {
+        font-weight: bold;
+        font-size: 1.05rem;
+        color: var(--primary-color);
+      }
 
-.fab {
-  position: fixed; bottom: 25px; right: 25px;
-  background-color: var(--primary-color); color: white;
-  width: 60px; height: 60px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 32px; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
-  cursor: pointer; border: none; z-index: 99;
-}
+      .doc-item-title {
+        font-size: 0.88rem;
+        color: #555;
+        margin-top: 3px;
+      }
 
-.modal {
-  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0.6); justify-content: center; align-items: center; z-index: 100;
-}
+      .doc-item-sub {
+        font-size: 0.82rem;
+        color: #777;
+        margin-top: 3px;
+      }
 
-.modal-content {
-  background: white; padding: 24px; border-radius: 12px;
-  width: 90%; max-width: 500px; max-height: 85vh; overflow-y: auto;
-}
+      /* Kartlar */
+      .card {
+        background: var(--card-bg);
+        border-radius: var(--border-radius);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        padding: 18px;
+        border-top: 5px solid var(--accent-color);
+        box-sizing: border-box;
+      }
 
-.form-row { display: flex; gap: 10px; }
-.form-row > div { flex: 1; }
+      .doctor-detail-card h3 {
+        margin: 0 0 5px 0;
+        color: var(--primary-color);
+        font-size: 1.4rem;
+      }
 
-.modal-content label { font-size: 0.82rem; font-weight: bold; color: #444; display: block; margin-top: 10px; }
-.modal-content input, .modal-content select { width: 100%; padding: 8px 10px; margin-top: 3px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 6px; font-size: 0.88rem; }
+      .doctor-title {
+        color: #666;
+        font-size: 0.95rem;
+        font-weight: bold;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #edf2f7;
+      }
 
-.seans-input-row {
-  background: #f4f7f6;
-  padding: 8px 10px;
-  border-radius: 8px;
-  margin-top: 8px;
-  position: relative;
-}
+      .doctor-info-item {
+        margin: 12px 0;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #333;
+      }
 
-.btn-remove-seans {
-  background: #e53e3e; color: white; border: none; border-radius: 4px;
-  padding: 2px 8px; cursor: pointer; font-size: 0.75rem; float: right;
-}
+      .contact-btn-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+      }
 
-.btn-add-seans {
-  background: #3aafa9; color: white; border: none; border-radius: 6px;
-  padding: 6px 12px; cursor: pointer; font-size: 0.82rem; margin-top: 8px; font-weight: bold;
-}
+      .contact-btn {
+        flex: 1;
+        padding: 10px;
+        border-radius: 6px;
+        text-align: center;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: bold;
+        display: inline-block;
+      }
 
-.modal-actions { display: flex; gap: 10px; margin-top: 20px; }
-.btn { flex: 1; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
-.btn-primary { background-color: var(--primary-color); color: white; }
-.btn-secondary { background-color: #888; color: white; }
+      .btn-phone { background: #e0f2f1; color: #004d40; }
+      .btn-whatsapp { background: #dcf8c6; color: #075e54; }
+
+      .card-header-toggle {
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        user-select: none;
+      }
+
+      .toggle-icon {
+        font-size: 0.9rem;
+        color: var(--primary-color);
+        transition: transform 0.3s ease;
+        margin-left: 10px;
+        margin-top: 5px;
+      }
+
+      .card-body {
+        display: none;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px dashed #e2e8f0;
+      }
+
+      .card.open .toggle-icon {
+        transform: rotate(180deg);
+      }
+
+      .card-header-info {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.82rem;
+        color: #555;
+        margin-bottom: 8px;
+        border-bottom: 1px dashed #eee;
+        padding-bottom: 6px;
+        font-weight: 500;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+
+      .card h3 { margin: 6px 0 10px 0; color: var(--primary-color); font-size: 1.15rem; }
+      .tag { display: inline-block; background: #e0f2f1; color: #004d40; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; }
+      .detail-item { margin: 5px 0; font-size: 0.88rem; line-height: 1.4; color: #333; }
+
+      .seans-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 10px;
+        margin-top: 10px;
+        font-size: 0.85rem;
+      }
+
+      .seans-item {
+        border-bottom: 1px solid #edf2f7;
+        padding: 4px 0;
+      }
+      .seans-item:last-child { border-bottom: none; }
+
+      .card-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 15px;
+        padding-top: 10px;
+        border-top: 1px solid #eee;
+      }
+
+      .btn-edit, .btn-delete {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .btn-edit { background: #e2f0d9; color: #385723; }
+      .btn-delete { background: #fce4d6; color: #c65911; }
+
+      .fab {
+        position: fixed; bottom: 25px; right: 25px;
+        background-color: var(--primary-color); color: white;
+        width: 60px; height: 60px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 32px; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        cursor: pointer; border: none; z-index: 99;
+      }
+
+      .modal {
+        display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.6); justify-content: center; align-items: center; z-index: 100;
+      }
+
+      .modal-content {
+        background: white; padding: 24px; border-radius: 12px;
+        width: 90%; max-width: 500px; max-height: 85vh; overflow-y: auto;
+      }
+
+      .form-row { display: flex; gap: 10px; }
+      .form-row > div { flex: 1; }
+
+      .modal-content label { font-size: 0.82rem; font-weight: bold; color: #444; display: block; margin-top: 10px; }
+      .modal-content input, .modal-content select { width: 100%; padding: 8px 10px; margin-top: 3px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 6px; font-size: 0.88rem; }
+
+      .seans-input-row {
+        background: #f4f7f6;
+        padding: 8px 10px;
+        border-radius: 8px;
+        margin-top: 8px;
+        position: relative;
+      }
+
+      .btn-remove-seans {
+        background: #e53e3e; color: white; border: none; border-radius: 4px;
+        padding: 2px 8px; cursor: pointer; font-size: 0.75rem; float: right;
+      }
+
+      .btn-add-seans {
+        background: #3aafa9; color: white; border: none; border-radius: 6px;
+        padding: 6px 12px; cursor: pointer; font-size: 0.82rem; margin-top: 8px; font-weight: bold;
+      }
+
+      .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+      .btn { flex: 1; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+      .btn-primary { background-color: var(--primary-color); color: white; }
+      .btn-secondary { background-color: #888; color: white; }
     </style>
   </head>
   <body>
@@ -251,34 +398,63 @@ input[type="text"], input[type="date"], input[type="number"], select {
 
     <header>
       <h1 onclick="toggleAdminMode()" title="Admin Girişi İçin Çift Tıklayın">
-        ☯️ TCM Reçete Bankası
+        ☯️ TCM Reçete & Uzman Bankası
         <span
           id="adminBadge"
           style="font-size: 0.8rem; color: #e67e22; display: none"
           >(Admin Modu)</span
         >
       </h1>
-      <p>Ortak Klinik Endikasyon ve Sendrom Reçeteleri</p>
+      <p>Ortak Klinik Endikasyonlar ve Uzman Danışma Rehberi</p>
     </header>
 
-    <div class="controls">
-      <input
-        type="text"
-        id="searchInput"
-        onkeyup="filterRecipes()"
-        placeholder="Hastalık, sendrom, semptom veya nokta ara..."
-      />
-      <button class="btn-add" onclick="openModal()">+ Yeni Reçete Ekle</button>
+    <!-- Sekmeler -->
+    <div class="tab-navigation">
+      <button class="tab-btn active" id="tabRecipesBtn" onclick="switchTab('recipes')">📜 Reçete Bankası</button>
+      <button class="tab-btn" id="tabDoctorsBtn" onclick="switchTab('doctors')">👨‍⚕️ Uzman Rehberi</button>
     </div>
 
-    <div class="recipe-grid" id="recipeContainer">
-      <p style="text-align: center; grid-column: 1/-1">
-        Reçeteler yükleniyor...
-      </p>
+    <!-- REÇETELER BÖLÜMÜ -->
+    <div id="recipesSection">
+      <div class="controls">
+        <input
+          type="text"
+          id="searchInput"
+          onkeyup="filterRecipes()"
+          placeholder="Hastalık, sendrom, semptom veya nokta ara..."
+        />
+        <button class="btn-add" onclick="openModal()">+ Yeni Reçete Ekle</button>
+      </div>
+
+      <div class="recipe-grid" id="recipeContainer">
+        <p style="text-align: center; grid-column: 1/-1; color:white;">
+          Reçeteler yükleniyor...
+        </p>
+      </div>
     </div>
 
-    <button class="fab" onclick="openModal()">+</button>
+    <!-- DOKTORLAR BÖLÜMÜ (Sadece Liste Yapısı) -->
+    <div id="doctorsSection" style="display: none;">
+      <div class="controls">
+        <input
+          type="text"
+          id="doctorSearchInput"
+          onkeyup="filterDoctors()"
+          placeholder="Doktor adı, şehir veya uzmanlık alanı ara..."
+        />
+        <button class="btn-add" onclick="openDoctorModal()">+ Yeni Uzman Ekle</button>
+      </div>
 
+      <div class="doctor-single-container">
+        <div class="doctor-list-pane" id="doctorListPane">
+          <p style="text-align:center; color:#666;">Yükleniyor...</p>
+        </div>
+      </div>
+    </div>
+
+    <button class="fab" id="fabBtn" onclick="openModal()">+</button>
+
+    <!-- REÇETE MODAL -->
     <div class="modal" id="recipeModal">
       <div class="modal-content">
         <h3 id="modalTitle" style="margin-top: 0; color: var(--primary-color)">
@@ -408,16 +584,66 @@ input[type="text"], input[type="date"], input[type="number"], select {
       </div>
     </div>
 
+    <!-- DOKTOR MODAL (EKLEME / DÜZENLEME) -->
+    <div class="modal" id="doctorModal">
+      <div class="modal-content">
+        <h3 id="docModalTitle" style="margin-top: 0; color: var(--primary-color)">
+          Yeni Uzman / Doktor Ekle
+        </h3>
+        <input type="hidden" id="docEditKey" value="" />
+
+        <label>Adı Soyadı</label>
+        <input type="text" id="docAdSoyad" placeholder="Örn: Dr. Ahmet Yılmaz" />
+
+        <div class="form-row">
+          <div>
+            <label>Şehir</label>
+            <input type="text" id="docSehir" placeholder="Örn: İstanbul" />
+          </div>
+          <div>
+            <label>Telefon / İletişim</label>
+            <input type="tel" id="docTelefon" placeholder="Örn: 05321234567" />
+          </div>
+        </div>
+
+        <label>Uzmanlık Alanı / Branş</label>
+        <input type="text" id="docUzmanlik" placeholder="Örn: TCM Akupunktur, Nöroloji" />
+
+        <label>Klinik / Hastane Adı</label>
+        <input type="text" id="docKlinik" placeholder="Örn: Özel Medikal Klinik / Kadıköy" />
+
+        <label>E-Posta Adresi (Opsiyonel)</label>
+        <input type="text" id="docEmail" placeholder="Örn: doktor@gmail.com" />
+
+        <div class="modal-actions">
+          <button class="btn btn-primary" onclick="saveDoctor()">Kaydet</button>
+          <button class="btn btn-secondary" onclick="closeDoctorModal()">İptal</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DOKTOR DETAY GÖSTERİM POPUP MODALI -->
+    <div class="modal" id="doctorDetailModal">
+      <div class="modal-content" style="border-top: 5px solid var(--primary-color);">
+        <div id="doctorDetailModalBody"></div>
+        <div style="margin-top: 20px; text-align: right;">
+          <button class="btn btn-secondary" style="max-width: 120px;" onclick="closeDoctorDetailModal()">Kapat</button>
+        </div>
+      </div>
+    </div>
+
     <script>
-      // 1. FIREBASE BAĞLANTISI (Buradaki URL'yi Firebase Realtime Database URL'niz ile değiştirin)
+      // 1. FIREBASE BAĞLANTISI
       const firebaseConfig = {
         databaseURL: "https://tcm-recete-default-rtdb.firebaseio.com/",
       };
 
       firebase.initializeApp(firebaseConfig);
       const db = firebase.database().ref("receteler");
+      const dbDoctors = firebase.database().ref("doktorlar");
 
       const ADMIN_PASSWORD = "123";
+      let activeTab = "recipes";
 
       function playAudio() {
         const music = document.getElementById("bgMusic");
@@ -438,7 +664,45 @@ input[type="text"], input[type="date"], input[type="number"], select {
       }
 
       let recipes = {};
+      let doctors = {};
       let currentSeansCount = 0;
+
+// Uzman Rehberi sekmesi için belirlenen şifre (İstediğiniz şifre ile değiştirebilirsiniz)
+const DOCTOR_TAB_PASSWORD = "123456"; 
+
+function switchTab(tab) {
+  // Eğer Uzman Rehberi sekmesine geçilmek isteniyorsa ve kullanıcı admin değilse şifre sor
+  if (tab === "doctors" && activeTab !== "doctors") {
+    const enteredPass = prompt("Uzman Rehberi'ne erişmek için şifreyi giriniz:");
+    if (enteredPass !== DOCTOR_TAB_PASSWORD) {
+      if (enteredPass !== null) {
+        alert("Hatalı şifre! Uzman Rehberi'ne erişim reddedildi.");
+      }
+      return; // Şifre yanlışsa veya iptale basıldıysa sekme değiştirmeyi durdur
+    }
+  }
+
+  activeTab = tab;
+  const recipesSec = document.getElementById("recipesSection");
+  const doctorsSec = document.getElementById("doctorsSection");
+  const tabRecipesBtn = document.getElementById("tabRecipesBtn");
+  const tabDoctorsBtn = document.getElementById("tabDoctorsBtn");
+  const fabBtn = document.getElementById("fabBtn");
+
+  if (tab === "recipes") {
+    recipesSec.style.display = "block";
+    doctorsSec.style.display = "none";
+    tabRecipesBtn.classList.add("active");
+    tabDoctorsBtn.classList.remove("active");
+    fabBtn.setAttribute("onclick", "openModal()");
+  } else {
+    recipesSec.style.display = "none";
+    doctorsSec.style.display = "block";
+    tabRecipesBtn.classList.remove("active");
+    tabDoctorsBtn.classList.add("active");
+    fabBtn.setAttribute("onclick", "openDoctorModal()");
+  }
+}
 
       function toggleAdminMode() {
         if (isAdmin) {
@@ -447,15 +711,17 @@ input[type="text"], input[type="date"], input[type="number"], select {
             localStorage.setItem("tcm_is_admin", "false");
             checkAdminBadge();
             renderRecipes();
+            renderDoctors();
           }
         } else {
           const pass = prompt("Admin Şifrenizi Girin:");
           if (pass === ADMIN_PASSWORD) {
             isAdmin = true;
             localStorage.setItem("tcm_is_admin", "true");
-            alert("Admin Modu Aktif! Tüm reçeteleri düzenleyebilirsiniz.");
+            alert("Admin Modu Aktif! Tüm verileri düzenleyebilirsiniz.");
             checkAdminBadge();
             renderRecipes();
+            renderDoctors();
           } else if (pass !== null) {
             alert("Hatalı Şifre!");
           }
@@ -467,35 +733,48 @@ input[type="text"], input[type="date"], input[type="number"], select {
         if (badge) badge.style.display = isAdmin ? "inline" : "none";
       }
 
-      // Canlı Gerçek Zamanlı Dinleyici (Realtime Listener)
-      function initFirebaseListener() {
-        checkAdminBadge();
-        if (firebaseConfig.databaseURL.includes("BURAYA")) {
-          document.getElementById("recipeContainer").innerHTML =
-            '<p style="text-align:center; color:red; grid-column: 1/-1;">Lütfen kod içindeki FIREBASE_URL alanını doldurun.</p>';
-          return;
-        }
+      function toggleCard(headerElement) {
+        const currentCard = headerElement.closest('.card');
+        const currentBody = currentCard.querySelector('.card-body');
+        if (!currentCard || !currentBody) return;
 
-        db.on(
-          "value",
-          (snapshot) => {
-            recipes = snapshot.val() || {};
-            renderRecipes();
-          },
-          (error) => {
-            console.error("Veri çekilemedi:", error);
-          },
-        );
+        const isCurrentlyOpen = currentCard.classList.contains('open');
+
+        document.querySelectorAll('.recipe-grid .card').forEach(card => {
+          card.classList.remove('open');
+          const body = card.querySelector('.card-body');
+          if (body) body.style.display = 'none';
+        });
+
+        if (!isCurrentlyOpen) {
+          currentCard.classList.add('open');
+          currentBody.style.display = 'block';
+        }
       }
 
+      // Realtime Dinleyiciler
+      function initFirebaseListener() {
+        checkAdminBadge();
+
+        db.on("value", (snapshot) => {
+          recipes = snapshot.val() || {};
+          renderRecipes();
+        });
+
+        dbDoctors.on("value", (snapshot) => {
+          doctors = snapshot.val() || {};
+          renderDoctors();
+        });
+      }
+
+      // REÇETE İŞLEMLERİ
       function renderRecipes(dataToRender = recipes) {
         const container = document.getElementById("recipeContainer");
         container.innerHTML = "";
 
         const keys = Object.keys(dataToRender);
         if (keys.length === 0) {
-          container.innerHTML =
-            '<p style="text-align:center; grid-column: 1/-1;">Henüz reçete bulunmamaktadır.</p>';
+          container.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color:white;">Henüz reçete bulunmamaktadır.</p>';
           return;
         }
 
@@ -513,8 +792,7 @@ input[type="text"], input[type="date"], input[type="number"], select {
 
           let seanslarHtml = "";
           if (Array.isArray(r.seanslar) && r.seanslar.length > 0) {
-            seanslarHtml =
-              '<div class="seans-box"><strong>Uygulanan Seans Detayları:</strong>';
+            seanslarHtml = '<div class="seans-box"><strong>Uygulanan Seans Detayları:</strong>';
             r.seanslar.forEach((s, idx) => {
               seanslarHtml += `
                 <div class="seans-item">
@@ -528,22 +806,24 @@ input[type="text"], input[type="date"], input[type="number"], select {
           let hastaBilgisi = [];
           if (r.hastaYasi) hastaBilgisi.push(`${r.hastaYasi} Yaş`);
           if (r.hastaCinsiyeti) hastaBilgisi.push(r.hastaCinsiyeti);
-          const hastaMetni =
-            hastaBilgisi.length > 0
-              ? `👤 ${hastaBilgisi.join(", ")}`
-              : "👤 Bilgi Yok";
+          const hastaMetni = hastaBilgisi.length > 0 ? `👤 ${hastaBilgisi.join(", ")}` : "👤 Bilgi Yok";
 
           container.innerHTML += `
-            <div class="card">
-              <div>
-                <div class="card-header-info">
-                  <span>👨‍⚕️ ${r.drAdi || "Belirtilmedi"}</span>
-                  <span>${hastaMetni}</span>
-                  <span>📅 ${r.tarih || "Tarih Yok"}</span>
+            <div class="card" id="card-${key}">
+              <div class="card-header-toggle" onclick="toggleCard(this)">
+                <div>
+                  <div class="card-header-info">
+                    <span>👨‍⚕️ ${r.drAdi || "Belirtilmedi"}</span>
+                    <span>${hastaMetni}</span>
+                    <span>📅 ${r.tarih || "Tarih Yok"}</span>
+                  </div>
+                  <span class="tag">${r.sendrom || "TCM Sendromu Belirtilmedi"}</span>
+                  <h3>${r.endikasyon || "Endikasyon Belirtilmedi"}</h3>
                 </div>
-                <span class="tag">${r.sendrom || "TCM Sendromu Belirtilmedi"}</span>
-                <h3>${r.endikasyon || "Endikasyon Belirtilmedi"}</h3>
-                
+                <span class="toggle-icon">▼</span>
+              </div>
+              
+              <div class="card-body">
                 <div class="detail-item"><strong>Semptomlar:</strong> ${r.semptomlar || "-"}</div>
                 <div class="detail-item"><strong>Dil Muayenesi:</strong> ${r.dil || "-"}</div>
                 <div class="detail-item"><strong>Nabız Muayenesi:</strong> ${r.nabiz || "-"}</div>
@@ -552,17 +832,15 @@ input[type="text"], input[type="date"], input[type="number"], select {
                 <div class="detail-item"><strong>Toplam Seans / Süre:</strong> ${r.toplamSeansSayisi || "-"} / ${r.planlananSure || "-"}</div>
                 
                 ${seanslarHtml}
+                ${actionsHtml}
               </div>
-              ${actionsHtml}
             </div>
           `;
         });
       }
 
       function filterRecipes() {
-        const query = document
-          .getElementById("searchInput")
-          .value.toLowerCase();
+        const query = document.getElementById("searchInput").value.toLowerCase();
         const filtered = {};
 
         Object.keys(recipes).forEach((key) => {
@@ -571,12 +849,7 @@ input[type="text"], input[type="date"], input[type="number"], select {
             (r.endikasyon && r.endikasyon.toLowerCase().includes(query)) ||
             (r.sendrom && r.sendrom.toLowerCase().includes(query)) ||
             (r.semptomlar && r.semptomlar.toLowerCase().includes(query)) ||
-            (r.dil && r.dil.toLowerCase().includes(query)) ||
-            (r.nabiz && r.nabiz.toLowerCase().includes(query)) ||
             (r.noktalar && r.noktalar.toLowerCase().includes(query)) ||
-            (r.hastaCinsiyeti &&
-              r.hastaCinsiyeti.toLowerCase().includes(query)) ||
-            (r.hastaYasi && r.hastaYasi.toString().includes(query)) ||
             (r.drAdi && r.drAdi.toLowerCase().includes(query));
           if (match) filtered[key] = r;
         });
@@ -584,6 +857,165 @@ input[type="text"], input[type="date"], input[type="number"], select {
         renderRecipes(filtered);
       }
 
+      // DOKTOR SADECE LİSTELEME İŞLEMLERİ
+      function renderDoctors(dataToRender = doctors) {
+        const listPane = document.getElementById("doctorListPane");
+        listPane.innerHTML = "";
+
+        const keys = Object.keys(dataToRender);
+        if (keys.length === 0) {
+          listPane.innerHTML = '<p style="text-align:center; color:#777; padding:15px;">Kayıtlı uzman bulunamadı.</p>';
+          return;
+        }
+
+        keys.reverse().forEach((key) => {
+          const d = dataToRender[key];
+
+          listPane.innerHTML += `
+            <div class="doctor-list-item" onclick="openDoctorDetailModal('${key}')">
+              <div>
+                <div class="doc-item-name">👨‍⚕️ ${d.adSoyad || "İsimsiz Uzman"}</div>
+                <div class="doc-item-title">${d.uzmanlik || "Akupunktur Uzmanı"}</div>
+                <div class="doc-item-sub">📍 ${d.sehir || "Şehir Belirtilmedi"}</div>
+              </div>
+              <div style="font-size: 1.2rem; color: var(--primary-color);">➔</div>
+            </div>
+          `;
+        });
+      }
+
+      function openDoctorDetailModal(key) {
+        const d = doctors[key];
+        if (!d) return;
+
+        const hasPermission = isAdmin || d.ownerId === myDeviceId;
+
+        const actionsHtml = hasPermission
+          ? `
+          <div class="card-actions">
+            <button class="btn-edit" onclick="closeDoctorDetailModal(); openEditDoctorModal('${key}');">✏️ Düzenle</button>
+            <button class="btn-delete" onclick="closeDoctorDetailModal(); deleteDoctor('${key}');">🗑️ Sil</button>
+          </div>
+        `
+          : "";
+
+        const cleanPhone = d.telefon ? d.telefon.replace(/[^0-9]/g, '') : '';
+        const waPhone = cleanPhone.startsWith('0') ? '9' + cleanPhone : cleanPhone;
+
+        const modalBody = document.getElementById("doctorDetailModalBody");
+        modalBody.innerHTML = `
+          <div class="doctor-detail-card">
+            <h3>${d.adSoyad || "Uzman Adı Yok"}</h3>
+            <div class="doctor-title">${d.uzmanlik || "Akupunktur Uzmanı"}</div>
+            
+            <div class="doctor-info-item">📍 <b>Şehir / Klinik:</b> ${d.sehir || "-"} ${d.klinik ? `(${d.klinik})` : ""}</div>
+            <div class="doctor-info-item">📞 <b>Telefon:</b> ${d.telefon || "-"}</div>
+            ${d.email ? `<div class="doctor-info-item">✉️ <b>E-Posta:</b> ${d.email}</div>` : ""}
+
+            <div class="contact-btn-group">
+              ${d.telefon ? `<a href="tel:${d.telefon}" class="contact-btn btn-phone">📞 Hemen Ara</a>` : ''}
+              ${cleanPhone ? `<a href="https://wa.me/${waPhone}" target="_blank" class="contact-btn btn-whatsapp">💬 WhatsApp</a>` : ''}
+            </div>
+
+            ${actionsHtml}
+          </div>
+        `;
+
+        document.getElementById("doctorDetailModal").style.display = "flex";
+      }
+
+      function closeDoctorDetailModal() {
+        document.getElementById("doctorDetailModal").style.display = "none";
+      }
+
+      function filterDoctors() {
+        const query = document.getElementById("doctorSearchInput").value.toLowerCase();
+        const filtered = {};
+
+        Object.keys(doctors).forEach((key) => {
+          const d = doctors[key];
+          const match =
+            (d.adSoyad && d.adSoyad.toLowerCase().includes(query)) ||
+            (d.sehir && d.sehir.toLowerCase().includes(query)) ||
+            (d.uzmanlik && d.uzmanlik.toLowerCase().includes(query)) ||
+            (d.klinik && d.klinik.toLowerCase().includes(query));
+          if (match) filtered[key] = d;
+        });
+
+        renderDoctors(filtered);
+      }
+
+      function openDoctorModal() {
+        document.getElementById("docModalTitle").innerText = "Yeni Uzman Ekle";
+        document.getElementById("docEditKey").value = "";
+        clearDoctorInputs();
+        document.getElementById("doctorModal").style.display = "flex";
+      }
+
+      function openEditDoctorModal(key) {
+        const d = doctors[key];
+        document.getElementById("docModalTitle").innerText = "Uzman Bilgisini Düzenle";
+        document.getElementById("docEditKey").value = key;
+
+        document.getElementById("docAdSoyad").value = d.adSoyad || "";
+        document.getElementById("docSehir").value = d.sehir || "";
+        document.getElementById("docTelefon").value = d.telefon || "";
+        document.getElementById("docUzmanlik").value = d.uzmanlik || "";
+        document.getElementById("docKlinik").value = d.klinik || "";
+        document.getElementById("docEmail").value = d.email || "";
+
+        document.getElementById("doctorModal").style.display = "flex";
+      }
+
+      function closeDoctorModal() {
+        document.getElementById("doctorModal").style.display = "none";
+        clearDoctorInputs();
+      }
+
+      function clearDoctorInputs() {
+        document.getElementById("docAdSoyad").value = "";
+        document.getElementById("docSehir").value = "";
+        document.getElementById("docTelefon").value = "";
+        document.getElementById("docUzmanlik").value = "";
+        document.getElementById("docKlinik").value = "";
+        document.getElementById("docEmail").value = "";
+      }
+
+      function saveDoctor() {
+        const adSoyadVal = document.getElementById("docAdSoyad").value;
+        if (!adSoyadVal) {
+          alert("Lütfen Doktor Ad Soyad alanını doldurun.");
+          return;
+        }
+
+        const editKey = document.getElementById("docEditKey").value;
+
+        const doctorData = {
+          adSoyad: adSoyadVal,
+          sehir: document.getElementById("docSehir").value,
+          telefon: document.getElementById("docTelefon").value,
+          uzmanlik: document.getElementById("docUzmanlik").value,
+          klinik: document.getElementById("docKlinik").value,
+          email: document.getElementById("docEmail").value,
+          ownerId: editKey === "" ? myDeviceId : doctors[editKey].ownerId,
+        };
+
+        if (editKey === "") {
+          dbDoctors.push(doctorData);
+        } else {
+          dbDoctors.child(editKey).update(doctorData);
+        }
+
+        closeDoctorModal();
+      }
+
+      function deleteDoctor(key) {
+        if (confirm("Bu doktor kaydını silmek istediğinize emin misiniz?")) {
+          dbDoctors.child(key).remove();
+        }
+      }
+
+      // Reçete Modal Yardımcıları
       function addSeansInput(tarihVal = "", noktalarVal = "") {
         currentSeansCount++;
         const container = document.getElementById("seansContainer");
@@ -601,7 +1033,7 @@ input[type="text"], input[type="date"], input[type="number"], select {
               <input type="date" class="seans-tarih" value="${tarihVal}" />
             </div>
             <div>
-              <input type="text" class="seans-noktalar" placeholder="Kullanılan Noktalar (Örn: LR3, GB20)" value="${noktalarVal}" />
+              <input type="text" class="seans-noktalar" placeholder="Kullanılan Noktalar" value="${noktalarVal}" />
             </div>
           </div>
         `;
@@ -617,9 +1049,7 @@ input[type="text"], input[type="date"], input[type="number"], select {
         document.getElementById("modalTitle").innerText = "Yeni Reçete Ekle";
         document.getElementById("editKey").value = "";
         clearInputs();
-        document.getElementById("tarih").value = new Date()
-          .toISOString()
-          .split("T")[0];
+        document.getElementById("tarih").value = new Date().toISOString().split("T")[0];
         document.getElementById("recipeModal").style.display = "flex";
       }
 
@@ -631,8 +1061,7 @@ input[type="text"], input[type="date"], input[type="number"], select {
         document.getElementById("drAdi").value = r.drAdi || "";
         document.getElementById("tarih").value = r.tarih || "";
         document.getElementById("hastaYasi").value = r.hastaYasi || "";
-        document.getElementById("hastaCinsiyeti").value =
-          r.hastaCinsiyeti || "";
+        document.getElementById("hastaCinsiyeti").value = r.hastaCinsiyeti || "";
         document.getElementById("endikasyon").value = r.endikasyon || "";
         document.getElementById("semptomlar").value = r.semptomlar || "";
         document.getElementById("dil").value = r.dil || "";
@@ -640,8 +1069,7 @@ input[type="text"], input[type="date"], input[type="number"], select {
         document.getElementById("sendrom").value = r.sendrom || "";
         document.getElementById("noktalar").value = r.noktalar || "";
         document.getElementById("igneTuru").value = r.igneTuru || "";
-        document.getElementById("toplamSeansSayisi").value =
-          r.toplamSeansSayisi || "";
+        document.getElementById("toplamSeansSayisi").value = r.toplamSeansSayisi || "";
         document.getElementById("planlananSure").value = r.planlananSure || "";
 
         document.getElementById("seansContainer").innerHTML = "";
@@ -714,9 +1142,9 @@ input[type="text"], input[type="date"], input[type="number"], select {
         };
 
         if (editKey === "") {
-          db.push(recipeData); // Yeni reçete ekle
+          db.push(recipeData);
         } else {
-          db.child(editKey).update(recipeData); // Var olanı güncelle
+          db.child(editKey).update(recipeData);
         }
 
         closeModal();
@@ -730,5 +1158,14 @@ input[type="text"], input[type="date"], input[type="number"], select {
 
       initFirebaseListener();
     </script>
+    <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then((reg) => console.log('Service Worker başarıyla yüklendi:', reg.scope))
+        .catch((err) => console.log('Service Worker hatası:', err));
+    });
+  }
+</script>
   </body>
 </html>
