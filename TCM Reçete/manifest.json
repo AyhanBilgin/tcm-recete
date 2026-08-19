@@ -1,0 +1,22 @@
+{
+  "name": "TCM Reçete & Uzman Bankası",
+  "short_name": "TCM Reçete",
+  "description": "TCM Akupunktur Reçete & Uzman Rehberi",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#2b7a78",
+  "theme_color": "#2b7a78",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/808/808581.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/808/808581.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
