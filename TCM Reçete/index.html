@@ -759,31 +759,18 @@ function switchTab(tab) {
         db.on("value", (snapshot) => {
           recipes = snapshot.val() || {};
           renderRecipes();
-        }, (error) => {
-          console.error("Firebase Veri Hatası:", error);
-          const container = document.getElementById("recipeContainer");
-          if (container) container.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color:white;">Veri bağlantı hatası oluştu.</p>';
         });
 
         dbDoctors.on("value", (snapshot) => {
           doctors = snapshot.val() || {};
           renderDoctors();
-        }, (error) => {
-          console.error("Firebase Doktor Hatası:", error);
         });
       }
 
       // REÇETE İŞLEMLERİ
       function renderRecipes(dataToRender = recipes) {
         const container = document.getElementById("recipeContainer");
-        if (!container) return;
-
         container.innerHTML = "";
-
-        if (!dataToRender || typeof dataToRender !== 'object') {
-          container.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color:white;">Henüz reçete bulunmamaktadır.</p>';
-          return;
-        }
 
         const keys = Object.keys(dataToRender);
         if (keys.length === 0) {
@@ -873,14 +860,7 @@ function switchTab(tab) {
       // DOKTOR SADECE LİSTELEME İŞLEMLERİ
       function renderDoctors(dataToRender = doctors) {
         const listPane = document.getElementById("doctorListPane");
-        if (!listPane) return;
-
         listPane.innerHTML = "";
-
-        if (!dataToRender || typeof dataToRender !== 'object') {
-          listPane.innerHTML = '<p style="text-align:center; color:#777; padding:15px;">Kayıtlı uzman bulunamadı.</p>';
-          return;
-        }
 
         const keys = Object.keys(dataToRender);
         if (keys.length === 0) {
